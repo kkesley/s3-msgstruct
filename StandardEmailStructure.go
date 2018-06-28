@@ -3,6 +3,7 @@ package msgstruct
 //StandardEmailStructure json supported structure to make an email request
 type StandardEmailStructure struct {
 	Method         string            `json:"method"` //should be email
+	Principal      string            `json:"principal"`
 	Sender         *string           `json:"sender"`
 	Receivers      []*string         `json:"receivers"`
 	CCs            []*string         `json:"ccs"`
