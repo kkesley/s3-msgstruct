@@ -2,6 +2,7 @@ package msgstruct
 
 //StandardSMSStructure json supported structure to make a sms request
 type StandardSMSStructure struct {
+	Principal      string            `json:"principal"`
 	Sender         *string           `json:"sender"`
 	Receiver       *string           `json:"receiver"`
 	TextBody       *string           `json:"text"`
