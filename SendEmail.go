@@ -3,6 +3,7 @@ package msgstruct
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,7 +12,10 @@ import (
 )
 
 //SendEmail use reusable s3 session
-func SendEmail(sess *session.Session, bucket string, key *string, email StandardEmailStructure) error {
+func SendEmail(sess *session.Session, bucket string, key string, email StandardEmailStructure) error {
+	if len(key) <= 0 {
+		return errors.New("key must not be empty")
+	}
 	svc := s3.New(sess)
 	strEmail, err := json.Marshal(email)
 	if err != nil {
@@ -20,14 +24,14 @@ func SendEmail(sess *session.Session, bucket string, key *string, email Standard
 	fmt.Println("sending to s3")
 	_, err = svc.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(bucket),
-		Key:    key,
+		Key:    aws.String("email/sending/" + key + ".json"),
 		Body:   bytes.NewReader(strEmail),
 	})
 	return err
 }
 
 //SendEmailDefault sends email without s3 session
-func SendEmailDefault(region string, bucket string, key *string, email StandardEmailStructure) error {
+func SendEmailDefault(region string, bucket string, key string, email StandardEmailStructure) error {
 	config := aws.Config{
 		Region: aws.String(region),
 	}

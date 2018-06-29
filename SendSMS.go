@@ -3,6 +3,7 @@ package msgstruct
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,7 +12,10 @@ import (
 )
 
 //SendSMS use reusable s3 session
-func SendSMS(sess *session.Session, bucket string, key *string, sms StandardSMSStructure) error {
+func SendSMS(sess *session.Session, bucket string, key string, sms StandardSMSStructure) error {
+	if len(key) <= 0 {
+		return errors.New("key must not be empty")
+	}
 	svc := s3.New(sess)
 	strSMS, err := json.Marshal(sms)
 	if err != nil {
@@ -20,14 +24,14 @@ func SendSMS(sess *session.Session, bucket string, key *string, sms StandardSMSS
 	fmt.Println("sending to s3")
 	_, err = svc.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(bucket),
-		Key:    key,
+		Key:    aws.String("sms/sending/" + key + ".json"),
 		Body:   bytes.NewReader(strSMS),
 	})
 	return err
 }
 
 //SendSMSDefault sends sms without s3 session
-func SendSMSDefault(region string, bucket string, key *string, sms StandardSMSStructure) error {
+func SendSMSDefault(region string, bucket string, key string, sms StandardSMSStructure) error {
 	config := aws.Config{
 		Region: aws.String(region),
 	}
