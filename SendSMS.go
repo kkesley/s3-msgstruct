@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -21,10 +22,16 @@ func SendSMS(sess *session.Session, bucket string, key string, sms StandardSMSSt
 	if err != nil {
 		return err
 	}
+	reg, err := regexp.Compile("[^a-zA-Z0-9_-]+")
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	filteredKey := reg.ReplaceAllString(key, "_")
 	fmt.Println("sending to s3")
 	_, err = svc.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(bucket),
-		Key:    aws.String("sms/sending/" + key + ".json"),
+		Key:    aws.String("sms/sending/" + filteredKey + ".json"),
 		Body:   bytes.NewReader(strSMS),
 	})
 	return err
