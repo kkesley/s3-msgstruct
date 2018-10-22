@@ -2,7 +2,8 @@ package msgstruct
 
 //StandardEmailStructure json supported structure to make an email request
 type StandardEmailStructure struct {
-	Method         string            `json:"method"` //should be email
+	ReferenceID    string            `json:"reference_id"` //THE FIRST SECTION IS THE SERVICE WHO CALLED e.g. newsletter/arn::itea::1::platform::client::1/SPECIFIC_TOPIC or platform/arn::itea::1::platform::client::1/SPECIFIC_TOPIC
+	Method         string            `json:"method"`       //should be email
 	Principal      string            `json:"principal"`
 	Sender         *string           `json:"sender"`
 	Receivers      []*string         `json:"receivers"`
